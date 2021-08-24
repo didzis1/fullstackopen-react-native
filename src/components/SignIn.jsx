@@ -5,6 +5,7 @@ import theme from '../theme';
 import SignInForm from './SignInForm';
 import * as yup from 'yup';
 import useSignIn from '../hooks/useSignIn';
+import { useHistory } from 'react-router-native';
 
 const initialValues = {
 	username: '',
@@ -25,14 +26,15 @@ const validationSchema = yup.object().shape({
 
 const SignIn = () => {
 	const [signIn] = useSignIn();
+	let history = useHistory();
 
 	const onSubmit = async (values) => {
 		const { username, password } = values;
 		try {
-			const { data } = await signIn({ username, password });
-			console.log('Data:', data.authorize.accessToken);
+			await signIn({ username, password });
+			history.push('/');
 		} catch (error) {
-			console.log('Errori:', error);
+			console.log(error);
 		}
 	};
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Link } from 'react-router-native';
 import Constants from 'expo-constants';
+import useSignOut from '../hooks/useSignOut';
 
 import AppBarTab from './AppBarTab';
 
@@ -17,29 +18,30 @@ const styles = StyleSheet.create({
 });
 
 const AppBar = () => {
-	const handleRepositoriesTab = () => {
-		console.log('Repositories tab');
-	};
+	const { data, signOut } = useSignOut();
 
-	const handleSignIn = () => {
-		console.log('Sign in tab');
+	const handleSignOut = async () => {
+		try {
+			await signOut();
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	return (
 		<View style={styles.container}>
 			<ScrollView horizontal>
-				<Link
-					to='/'
-					component={AppBarTab}
-					text='Repositories'
-					onPress={handleRepositoriesTab}
-				/>
-				<Link
-					to='/signin'
-					component={AppBarTab}
-					text='Sign In'
-					onPress={handleSignIn}
-				/>
+				<Link to='/' component={AppBarTab} text='Repositories' />
+				{data?.authorizedUser ? (
+					<Link
+						to='/signin'
+						component={AppBarTab}
+						text='Sign Out'
+						onPress={handleSignOut}
+					/>
+				) : (
+					<Link to='/signin' component={AppBarTab} text='Sign In' />
+				)}
 			</ScrollView>
 		</View>
 	);
