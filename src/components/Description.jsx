@@ -15,12 +15,13 @@ const styles = StyleSheet.create({
 	infoContainer: {
 		display: 'flex',
 		flexDirection: 'column',
-		justifyContent: 'space-around',
+		justifyContent: 'space-between',
 		alignItems: 'flex-start',
 		padding: 5,
-		height: 100
+		flexShrink: 1
 	},
 	logo: {
+		minHeight: 50,
 		width: 50,
 		height: 50,
 		borderRadius: 5,
@@ -41,7 +42,9 @@ const Description = ({ item }) => {
 			<View style={styles.imageContainer}>
 				<Image
 					style={styles.logo}
-					source={{ uri: item.ownerAvatarUrl }}
+					source={{
+						uri: item.ownerAvatarUrl
+					}}
 				/>
 			</View>
 
@@ -49,7 +52,10 @@ const Description = ({ item }) => {
 				<Text fontWeight='bold' fontSize='subheading'>
 					{item.fullName}
 				</Text>
-				<Text color='textSecondary' fontSize='subheading'>
+				<Text
+					color='textSecondary'
+					fontSize='subheading'
+					style={{ paddingVertical: 3 }}>
 					{item.description}
 				</Text>
 				<View>
