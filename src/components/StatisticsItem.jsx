@@ -11,10 +11,10 @@ const styles = StyleSheet.create({
 	}
 });
 
-const StatisticsItem = ({ label, value }) => {
+const StatisticsItem = ({ label, value, testID }) => {
 	return (
 		<View style={styles.itemContainer}>
-			<Text fontWeight='bold' fontSize='subheading'>
+			<Text testID={testID} fontWeight='bold' fontSize='subheading'>
 				{value}
 			</Text>
 			<Text color='textSecondary' fontSize='subheading'>

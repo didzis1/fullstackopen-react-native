@@ -49,17 +49,21 @@ const Description = ({ item }) => {
 			</View>
 
 			<View style={styles.infoContainer}>
-				<Text fontWeight='bold' fontSize='subheading'>
+				<Text fontWeight='bold' fontSize='subheading' testID='fullname'>
 					{item.fullName}
 				</Text>
 				<Text
 					color='textSecondary'
 					fontSize='subheading'
-					style={{ paddingVertical: 3 }}>
+					style={{ paddingVertical: 3 }}
+					testID='description'>
 					{item.description}
 				</Text>
 				<View>
-					<Text style={styles.languageBox} fontSize='subheading'>
+					<Text
+						style={styles.languageBox}
+						fontSize='subheading'
+						testID='language'>
 						{item.language}
 					</Text>
 				</View>
