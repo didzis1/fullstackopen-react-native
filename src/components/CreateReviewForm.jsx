@@ -4,12 +4,15 @@ import { Formik } from 'formik';
 import FormikTextInput from './FormikTextInput';
 import theme from '../theme';
 import Button from './Button';
+import * as yup from 'yup';
+import useCreateReview from '../hooks/useCreateReview';
+import { useHistory } from 'react-router-native';
 
 const initialValues = {
 	ownerName: '',
 	repositoryName: '',
 	rating: '',
-	review: ''
+	text: ''
 };
 
 const styles = StyleSheet.create({
@@ -20,13 +23,32 @@ const styles = StyleSheet.create({
 });
 
 const CreateReviewForm = () => {
-	const onSubmit = () => {
-		console.log('New review created');
+	const [createReview] = useCreateReview();
+	let history = useHistory();
+
+	const onSubmit = async ({ ...data }) => {
+		const formattedData = { ...data, rating: Number(data.rating) };
+		const response = await createReview(formattedData);
+		history.push(response.createReview.repositoryId);
 	};
+
+	const validationSchema = yup.object().shape({
+		ownerName: yup.string().required("Owner's name is required"),
+		repositoryName: yup.string().required('Repository name is required'),
+		rating: yup
+			.number()
+			.min(0, 'Minimun rating is 0')
+			.max(100, 'Max rating is 100')
+			.typeError('You must specify a number.'),
+		review: yup.string().notRequired()
+	});
 
 	return (
 		<View>
-			<Formik initialValues={initialValues} onSubmit={onSubmit}>
+			<Formik
+				initialValues={initialValues}
+				validationSchema={validationSchema}
+				onSubmit={onSubmit}>
 				{({ handleSubmit }) => (
 					<View style={styles.container}>
 						<FormikTextInput
@@ -44,7 +66,11 @@ const CreateReviewForm = () => {
 							placeholder='Rating between 0 and 100'
 						/>
 
-						<FormikTextInput name='review' placeholder='Review' />
+						<FormikTextInput
+							name='text'
+							placeholder='Review'
+							multiline
+						/>
 
 						<Button onPress={handleSubmit}>Create a review</Button>
 					</View>

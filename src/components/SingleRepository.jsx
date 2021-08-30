@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
 	container: {
 		display: 'flex',
 		flexDirection: 'row',
-		justifyContent: 'space-between',
+		justifyContent: 'flex-start',
 		backgroundColor: theme.colors.white,
 		padding: 10
 	},
@@ -78,6 +78,7 @@ const SingleRepository = () => {
 	const { id } = useParams();
 
 	const { loading, data } = useQuery(GET_REPOSITORY, {
+		fetchPolicy: 'cache-and-network',
 		variables: { id }
 	});
 
@@ -87,12 +88,11 @@ const SingleRepository = () => {
 
 	const repositoryData = data.repository;
 	const { reviews, ...repository } = repositoryData;
-
 	return (
 		<FlatList
 			data={reviews.edges}
 			renderItem={({ item }) => <ReviewItem review={item} />}
-			keyExtractor={({ id }) => id}
+			keyExtractor={(reviews) => reviews.node.id}
 			ListHeaderComponent={() => (
 				<RepositoryInfo repository={repository} />
 			)}

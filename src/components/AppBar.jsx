@@ -47,7 +47,18 @@ const AppBar = () => {
 						/>
 					</>
 				) : (
-					<Link to='/signin' component={AppBarTab} text='Sign In' />
+					<>
+						<Link
+							to='/signin'
+							component={AppBarTab}
+							text='Sign In'
+						/>
+						<Link
+							to='/signup'
+							component={AppBarTab}
+							text='Sign Up'
+						/>
+					</>
 				)}
 			</ScrollView>
 		</View>
