@@ -2,8 +2,7 @@ import React from 'react';
 import { FlatList, View, StyleSheet } from 'react-native';
 import Text from './Text';
 import { useParams } from 'react-router-native';
-import { useQuery } from '@apollo/client';
-import { GET_REPOSITORY } from '../graphql/queries';
+import useRepository from '../hooks/useRepository';
 import RepositoryItem from './RepositoryItem';
 import Loading from './Loading';
 import theme from '../theme';
@@ -77,17 +76,21 @@ const ItemSeparator = () => <View style={styles.separator} />;
 const SingleRepository = () => {
 	const { id } = useParams();
 
-	const { loading, data } = useQuery(GET_REPOSITORY, {
-		fetchPolicy: 'cache-and-network',
-		variables: { id }
+	const { loading, data, fetchMore } = useRepository({
+		id,
+		first: 5
 	});
 
 	if (loading) {
 		return <Loading />;
 	}
+	const { reviews, ...repository } = data;
 
-	const repositoryData = data.repository;
-	const { reviews, ...repository } = repositoryData;
+	const onEndReach = () => {
+		console.log('REACHED');
+		fetchMore();
+	};
+
 	return (
 		<FlatList
 			data={reviews.edges}
@@ -98,6 +101,8 @@ const SingleRepository = () => {
 			)}
 			ListHeaderComponentStyle={styles.headerSeparator}
 			ItemSeparatorComponent={ItemSeparator}
+			onEndReached={onEndReach}
+			onEndReachedThreshold={0.5}
 		/>
 	);
 };

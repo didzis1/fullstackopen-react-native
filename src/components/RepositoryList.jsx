@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import useRepositories from '../hooks/useRepositories';
 import { FlatList, View, StyleSheet } from 'react-native';
+import { Searchbar } from 'react-native-paper';
+import { useDebounce } from 'use-debounce';
 
 import RepositoryItem from './RepositoryItem';
 import SortBar from './SortBar';
@@ -25,38 +27,75 @@ const sortByValues = {
 	}
 };
 
-export const RepositoryListContainer = ({ repositories }) => {
-	const repositoryNodes = repositories
-		? repositories.edges.map((edge) => edge.node)
-		: [];
+export class RepositoryListContainer extends React.Component {
+	renderHeader = () => {
+		const { setSearchValue, searchValue, selectedValue, setSelectedValue } =
+			this.props;
+		return (
+			<>
+				<Searchbar
+					placeholder='Search repositories'
+					onChangeText={setSearchValue}
+					value={searchValue}
+				/>
+				<SortBar
+					selectedValue={selectedValue}
+					setSelectedValue={setSelectedValue}
+					sortByValues={sortByValues}
+				/>
+			</>
+		);
+	};
 
-	const renderItem = ({ item }) => {
+	renderItem = ({ item }) => {
 		return <RepositoryItem key={item.id} item={item} />;
 	};
-	return (
-		<FlatList
-			data={repositoryNodes}
-			ItemSeparatorComponent={ItemSeparator}
-			renderItem={renderItem}
-		/>
-	);
-};
+
+	render() {
+		const { repositories } = this.props;
+		const repositoryNodes = repositories
+			? repositories.edges.map((edge) => edge.node)
+			: [];
+
+		return (
+			<FlatList
+				data={repositoryNodes}
+				ItemSeparatorComponent={ItemSeparator}
+				ListHeaderComponent={this.renderHeader}
+				renderItem={this.renderItem}
+				onEndReached={this.props.onEndReach}
+				onEndReachedThreshold={0.5}
+			/>
+		);
+	}
+}
 
 const ItemSeparator = () => <View style={styles.separator} />;
 
 const RepositoryList = () => {
 	const [selectedValue, setSelectedValue] = useState(sortByValues.latest);
-	const { repositories } = useRepositories(selectedValue);
+	const [searchValue, setSearchValue] = useState('');
+	const [debouncedSearch] = useDebounce(searchValue, 500);
+	const variables = { ...selectedValue, searchKeyword: debouncedSearch };
+
+	const { repositories, fetchMore } = useRepositories({
+		...variables,
+		first: 5
+	});
+	const onEndReach = () => {
+		fetchMore();
+	};
 
 	return (
-		<>
-			<SortBar
-				selectedValue={selectedValue}
-				setSelectedValue={setSelectedValue}
-				sortByValues={sortByValues}
-			/>
-			<RepositoryListContainer repositories={repositories} />
-		</>
+		<RepositoryListContainer
+			repositories={repositories}
+			setSearchValue={(query) => setSearchValue(query)}
+			searchValue={searchValue}
+			selectedValue={selectedValue}
+			setSelectedValue={setSelectedValue}
+			sortByValues={sortByValues}
+			onEndReach={onEndReach}
+		/>
 	);
 };
 
