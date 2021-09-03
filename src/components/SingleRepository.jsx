@@ -87,7 +87,6 @@ const SingleRepository = () => {
 	const { reviews, ...repository } = data;
 
 	const onEndReach = () => {
-		console.log('REACHED');
 		fetchMore();
 	};
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Link } from 'react-router-native';
 import Constants from 'expo-constants';
-import useSignOut from '../hooks/useSignOut';
+import useAuthorizedUser from '../hooks/useAuthorizedUser';
 
 import AppBarTab from './AppBarTab';
 
@@ -18,7 +18,10 @@ const styles = StyleSheet.create({
 });
 
 const AppBar = () => {
-	const { data, signOut } = useSignOut();
+	const variables = {
+		includeReviews: false
+	};
+	const { authorizedUser, signOut } = useAuthorizedUser(variables);
 
 	const handleSignOut = async () => {
 		try {
@@ -32,7 +35,7 @@ const AppBar = () => {
 		<View style={styles.container}>
 			<ScrollView horizontal>
 				<Link to='/' component={AppBarTab} text='Repositories' />
-				{data?.authorizedUser ? (
+				{authorizedUser ? (
 					<>
 						<Link
 							to='/create-review'
@@ -40,9 +43,14 @@ const AppBar = () => {
 							text='Create a review'
 						/>
 						<Link
+							to='/my-reviews'
+							component={AppBarTab}
+							text='My reviews'
+						/>
+						<Link
 							to='/signin'
 							component={AppBarTab}
-							text='Sign Out'
+							text='Sign out'
 							onPress={handleSignOut}
 						/>
 					</>
@@ -51,12 +59,12 @@ const AppBar = () => {
 						<Link
 							to='/signin'
 							component={AppBarTab}
-							text='Sign In'
+							text='Sign in'
 						/>
 						<Link
 							to='/signup'
 							component={AppBarTab}
-							text='Sign Up'
+							text='Sign up'
 						/>
 					</>
 				)}
